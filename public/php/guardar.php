@@ -1,31 +1,30 @@
 <?php
-// guardar.php está en public/php/
-// vendor/ y .env están en la raíz del proyecto (dos niveles arriba)
-$root = __DIR__ . "/../../";
-
-require_once $root . "vendor/autoload.php"; // Composer
-
 // =============================================
-//  Cargar .env en entorno local (si existe).
-//  En Render las variables ya están en el sistema.
+//  Cargar .env manualmente (sin Composer)
+//  Solo aplica en entorno local
 // =============================================
-if (file_exists($root . ".env")) {
-    $dotenv = Dotenv\Dotenv::createImmutable($root);
-    $dotenv->load();
+$envFile = __DIR__ . "/../../.env";
+
+if (file_exists($envFile)) {
+    $lineas = file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+    foreach ($lineas as $linea) {
+        if (str_starts_with(trim($linea), "#")) continue; // ignorar comentarios
+        if (str_contains($linea, "=")) {
+            [$clave, $valor] = explode("=", $linea, 2);
+            $_ENV[trim($clave)] = trim($valor);
+        }
+    }
 }
 
 // =============================================
 //  Leer el URI de MongoDB desde el entorno
 // =============================================
-$mongoHost = $_ENV["MONGODB_URI"] ?? getenv("MONGODB_URI");
+$mongoUri = $_ENV["MONGODB_URI"] ?? getenv("MONGODB_URI");
 
-if (!$mongoHost) {
+if (!$mongoUri) {
     http_response_code(500);
     die("Error de configuración: la variable MONGODB_URI no está definida.");
 }
-
-$mongoDB  = "students";   // Base de datos en Atlas
-$mongoCol = "Customer";   // Colección en Atlas
 
 // =============================================
 //  Solo procesar si el método es POST
@@ -58,13 +57,13 @@ if (!$nombres || !$apellidos || !$cedula || !$correo || !$fecha_nacimiento || !$
     die("Por favor completa todos los campos requeridos.");
 }
 
-use MongoDB\Client;
-
+// =============================================
+//  Guardar en MongoDB usando el driver nativo
+//  (ext-mongodb — sin Composer)
+// =============================================
 try {
-    $client     = new Client($mongoHost);
-    $collection = $client->students->Customer;
+    $manager = new MongoDB\Driver\Manager($mongoUri);
 
-    // Documento a insertar
     $documento = [
         "nombres"          => $nombres,
         "apellidos"        => $apellidos,
@@ -75,13 +74,16 @@ try {
         "semestre"         => $semestre,
         "modalidad"        => $modalidad,
         "observaciones"    => $observaciones,
-        "fecha_registro"   => new MongoDB\BSON\UTCDateTime(), // fecha actual
+        "fecha_registro"   => new MongoDB\BSON\UTCDateTime(),
     ];
 
-    $resultado = $collection->insertOne($documento);
+    $bulk = new MongoDB\Driver\BulkWrite();
+    $bulk->insert($documento);
+
+    $writeConcern = new MongoDB\Driver\WriteConcern(MongoDB\Driver\WriteConcern::MAJORITY);
+    $resultado    = $manager->executeBulkWrite("students.Customer", $bulk, ["writeConcern" => $writeConcern]);
 
     if ($resultado->getInsertedCount() === 1) {
-        // Redirigir de vuelta al formulario con mensaje de éxito
         header("Location: ../index.html?estado=ok");
         exit;
     } else {

@@ -1,16 +1,11 @@
 FROM php:8.2-apache
 
-# Instalador confiable de extensiones PHP (maneja todas las dependencias del sistema automáticamente)
+# Instalar extensión mongodb (sin Composer, sin pecl manual)
 COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
 RUN install-php-extensions mongodb
 
-# Instalar Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-
 WORKDIR /var/www/html
 COPY . .
-
-RUN composer install --no-dev --optimize-autoloader --ignore-platform-req=ext-mongodb
 
 RUN chown -R www-data:www-data /var/www/html
 
