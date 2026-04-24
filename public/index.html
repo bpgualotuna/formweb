@@ -1,56 +1,55 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Formulario de registro de estudiante" />
-  <title>Registro de Estudiante</title>
+  <meta name="description" content="Student Registration Form" />
+  <title>Student Registration</title>
   <link rel="stylesheet" href="css/styles.css" />
 </head>
 <body>
 
   <div class="container">
-    <h1>Registro de Estudiante</h1>
+    <h1>Student Registration</h1>
 
     <form action="php/guardar.php" method="POST">
 
       <div class="form-group">
-        <label for="fullName">Nombre completo</label>
-        <input type="text" id="fullName" name="fullName" placeholder="Ej. Victoria Díaz" required />
+        <label for="fullName">Full Name</label>
+        <input type="text" id="fullName" name="fullName" placeholder="e.g. Victoria Díaz" required />
       </div>
 
       <div class="form-group">
-        <label for="email">Correo Electrónico (email)</label>
-        <input type="email" id="email" name="email" placeholder="Ej. cvdiaz3@espe.edu.ec" required />
+        <label for="email">Email Address</label>
+        <input type="email" id="email" name="email" placeholder="e.g. cvdiaz3@espe.edu.ec" required />
       </div>
 
       <div class="form-group">
-        <label for="age">Edad</label>
-        <input type="number" id="age" name="age" placeholder="Ej. 23" required />
+        <label for="age">Age</label>
+        <input type="number" id="age" name="age" placeholder="e.g. 23" required />
       </div>
 
       <div class="form-group">
-        <label for="studentCodingPrefer">Lenguaje de programación favorito</label>
-        <input type="text" id="studentCodingPrefer" name="studentCodingPrefer" placeholder="Ej. C++" required />
+        <label for="studentCodingPrefer">Favorite Programming Language</label>
+        <input type="text" id="studentCodingPrefer" name="studentCodingPrefer" placeholder="e.g. C++" required />
       </div>
 
-      <button type="submit" class="btn-submit">Registrar Estudiante</button>
+      <button type="submit" class="btn-submit">Register Student</button>
 
     </form>
 
     <div style="margin-top: 40px;">
-      <h2>Estudiantes Registrados</h2>
+      <h2>Registered Students</h2>
       <table border="1" style="width: 100%; border-collapse: collapse; margin-top: 10px;">
         <thead>
           <tr>
-            <th style="padding: 10px;">Nombre completo</th>
+            <th style="padding: 10px;">Full Name</th>
             <th style="padding: 10px;">Email</th>
-            <th style="padding: 10px;">Edad</th>
-            <th style="padding: 10px;">Lenguaje Favorito</th>
+            <th style="padding: 10px;">Age</th>
+            <th style="padding: 10px;">Favorite Language</th>
           </tr>
         </thead>
         <tbody id="tabla-estudiantes">
-          <!-- Los datos se cargarán aquí dinámicamente -->
         </tbody>
       </table>
     </div>
@@ -67,7 +66,7 @@
             return;
           }
           if (data.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; padding: 10px;">No hay registros.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; padding: 10px;">No records found.</td></tr>`;
             return;
           }
           
@@ -85,7 +84,7 @@
           tbody.innerHTML = html;
         })
         .catch(err => {
-          console.error('Error al obtener datos:', err);
+          console.error('Error fetching data:', err);
         });
     });
   </script>
