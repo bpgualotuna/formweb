@@ -41,18 +41,13 @@ function limpiar(string $valor): string {
     return htmlspecialchars(trim($valor));
 }
 
-$nombres          = limpiar($_POST["nombres"]          ?? "");
-$apellidos        = limpiar($_POST["apellidos"]        ?? "");
-$cedula           = limpiar($_POST["cedula"]           ?? "");
-$correo           = limpiar($_POST["correo"]           ?? "");
-$fecha_nacimiento = limpiar($_POST["fecha_nacimiento"] ?? "");
-$carrera          = limpiar($_POST["carrera"]          ?? "");
-$semestre         = (int) ($_POST["semestre"]          ?? 0);
-$modalidad        = limpiar($_POST["modalidad"]        ?? "");
-$observaciones    = limpiar($_POST["observaciones"]    ?? "");
+$fullName            = limpiar($_POST["fullName"]            ?? "");
+$email               = limpiar($_POST["email"]               ?? "");
+$age                 = (int) ($_POST["age"]                  ?? 0);
+$studentCodingPrefer = limpiar($_POST["studentCodingPrefer"] ?? "");
 
 // Validación básica de campos requeridos
-if (!$nombres || !$apellidos || !$cedula || !$correo || !$fecha_nacimiento || !$carrera || !$semestre || !$modalidad) {
+if (!$fullName || !$email || !$age || !$studentCodingPrefer) {
     http_response_code(400);
     die("Por favor completa todos los campos requeridos.");
 }
@@ -65,16 +60,10 @@ try {
     $manager = new MongoDB\Driver\Manager($mongoUri);
 
     $documento = [
-        "nombres"          => $nombres,
-        "apellidos"        => $apellidos,
-        "cedula"           => $cedula,
-        "correo"           => $correo,
-        "fecha_nacimiento" => $fecha_nacimiento,
-        "carrera"          => $carrera,
-        "semestre"         => $semestre,
-        "modalidad"        => $modalidad,
-        "observaciones"    => $observaciones,
-        "fecha_registro"   => new MongoDB\BSON\UTCDateTime(),
+        "fullName"            => $fullName,
+        "email"               => $email,
+        "age"                 => $age,
+        "studentCodingPrefer" => $studentCodingPrefer,
     ];
 
     $bulk = new MongoDB\Driver\BulkWrite();
